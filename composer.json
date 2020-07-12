@@ -1,0 +1,19 @@
+{
+  "name": "vendor_name/shortlinks.local",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "freeware",
+  "authors": [
+    {
+      "name": "Slava",
+      "email": "fslava2009@gmail.com"
+    }
+  ],
+  "require": {
+    "doctrine/orm": "^2.6.2",
+    "symfony/yaml": "2.*"
+  },
+  "autoload": {
+    "psr-0": {"": "src/"}
+  }
+}
