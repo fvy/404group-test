@@ -31,6 +31,7 @@ $routes = [
     'user/([0-9]+)'  => 'home/index/$1',
     'form'           => 'home/form',
     '404error'       => 'home/show404',
+    'anti-flood-page' => 'home/antiflood',
     '([0-9A-Za-z]+)' => 'home/redirect/$1',
     ''               => 'home/index',
 ];

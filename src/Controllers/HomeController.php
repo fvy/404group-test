@@ -24,11 +24,9 @@ class HomeController
         $token = DbUsers::getTokenById($param);
 
         $view = new Template();
-        $view->properties = [
-            'title' => "Safe redirects/Links Shortener",
-            'pageName'  => "Links",
-            'token' => $token,
-        ];
+        $view->title = 'Safe redirects/Links Shortener';
+        $view->pageName = 'Links';
+        $view->token = $token;
 
         echo $view->render('Layout');
 
@@ -42,7 +40,6 @@ class HomeController
      */
     public function actionForm()
     {
-//        $antiFlood = new AntiFlood;
         $urlValidator = new UrlValidator;
 
         $url = $_POST['url'];
@@ -59,12 +56,8 @@ class HomeController
             throw new \Exception("Empty token");
         }
 
-//        if ($antiFlood->isOverLimit($url, $userAgent, $userIp)) {
-//            throw new \Exception("Too many requests from User with token:" . $token);
-//        }
-
         if ([$link_id, $shortCode] = DbMapper::isUrlExists($url)) {
-            // Write statistic about found data
+            // Write statistic about found url
             DbUsersStats::insert($link_id, $userAgent, $userIp, $userReferrer, $token);
             // Redirect to $url
             echo "Found short code: {$shortCode}";
@@ -86,9 +79,9 @@ class HomeController
 
         try {
             $urlValidator = new UrlValidator;
+            $antiFlood = new AntiFlood(60);
 
             if ($urlValidator->isCorrectShortUrl($shortCode)) {
-
                 [$link_id, $url] = DbMapper::getUrlByCode($shortCode);
 
                 if (empty($url)) {
@@ -99,8 +92,15 @@ class HomeController
                 DbUsersStats::insert($link_id, $userAgent, $userIp, $userReferrer, null);
 
                 $response = $urlValidator->httpResponseCode($url);
-                if (empty($response) && $response == 404) {
+                $hashArgs = [$userAgent, $userIp, $userReferrer];
+                $is404Error = empty($response) || $response == 404;
+
+                if ($is404Error && !$antiFlood->isFlood(...$hashArgs)) {
+                    $antiFlood->increaseCounter(...$hashArgs);
                     throw new \Exception("404 Error");
+                } elseif($is404Error && $antiFlood->isFlood(...$hashArgs)) {
+                    header("Location: /anti-flood-page/");
+                    exit;
                 } elseif ($urlValidator->isCorrectUrl($url)) {
                     header("Location: " . $url);
                     exit;
@@ -122,6 +122,23 @@ class HomeController
         header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
         echo "404 ERROR";
         exit;
+    }
+
+    /**
+     * Method for testing 404 error
+     */
+    function actionAntiFlood()
+    {
+        $view = new Template();
+        $view->properties = [
+            'title'    => "Anti-flood page",
+            'pageName' => "Anti-flood page",
+            'body'     => 'Flood attack detected',
+        ];
+
+        echo $view->render('Layout404');
+
+        return true;
     }
 }
 

@@ -9,8 +9,13 @@ use Memcached;
 class AntiFlood
 {
     const ALLOWED_ATTEMPTS = 5;
-    private $shelf;
-    private $timeToStore;
+
+    private $memcached;
+    private $timeToStore; // in seconds
+    /**
+     * @var mixed
+     */
+    private $counter;
 
     /**
      * AntiFlood constructor.
@@ -18,41 +23,29 @@ class AntiFlood
      */
     function __construct($timeToStore = 10)
     {
-        $this->shelf = new Memcached();
-        $this->shelf->addServer('memcached', 11211);
+        $this->memcached = new Memcached();
+        $this->memcached->addServer('memcached', 11211);
         $this->timeToStore = $timeToStore;
+        $this->counter = 0;
     }
 
-    /**
-     * @param $key
-     * @param $url
-     */
-    function putOnShelf($key, $url)
+    public function isFlood(...$params)
     {
-        $this->shelf->set($key, $url, $this->timeToStore);
-    }
-
-    /**
-     * @param $url
-     * @param $userAgent
-     * @param $userIp
-     * @return mixed
-     */
-    function isOverLimit($url, $userAgent, $userIp)
-    {
-        $key = crc32(join("|", [$url, $userAgent, $userIp]));
-
-        $counter = $this->shelf->get($key);
-        $counter++;
-        print_r("<pre style='background-color: black; color: limegreen;'>");
-        print_r([$key,$counter]);
-        print_r("</pre>");
-        if ($counter < self::ALLOWED_ATTEMPTS) {
-            $this->shelf->set($key, $counter, $this->timeToStore);
-
-            return false;
+        $this->counter = (int) $this->memcached->get(self::makeHash($params));
+        if ($this->counter > self::ALLOWED_ATTEMPTS) {
+            return true;
         }
 
-        return trure;
+        return false;
+    }
+
+    public function increaseCounter(...$params)
+    {
+        $this->memcached->set(self::makeHash($params), ++$this->counter, $this->timeToStore);
+    }
+
+    private function makeHash($params)
+    {
+        return md5(join("|", $params));
     }
 }

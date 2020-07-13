@@ -2,6 +2,10 @@
 
 use Fvy\Group404\Template;
 
+$view = new Template();
+$view->pageName = $this->properties["pageName"];
+$view->title = $this->properties["title"];
+$view->body = $this->properties["body"];
 ?>
 <!doctype html>
 <html lang="ru">
@@ -18,7 +22,7 @@ use Fvy\Group404\Template;
           crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/css/all.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" crossorigin="anonymous">
-    <title><?= $this->title ?></title>
+    <title><?= $this->properties["title"]; ?></title>
 </head>
 <body>
 
@@ -26,18 +30,8 @@ use Fvy\Group404\Template;
     <div class="col-12">
         <div class="col-6">
             <?php
-            echo $this->render('HomeForm');
+            echo $view->render('HomeFlood');
             ?>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <h3><?= $this->pageName; ?></h3>
-                <?php
-//                $view->data = $this->properties["data"];
-//                $view->dataOfTs = $this->properties["dataOfTs"];
-//                echo $view->render('HomeView');
-                ?>
-            </div>
         </div>
     </div>
 </div>

@@ -52,7 +52,7 @@ class DbUsersStats
                 "agent_id"    => $agent_id,
                 "ip_id"       => $ip_id,
                 "referrer_id" => $referrer_id,
-                "token_id"    => $token_id ? $token_id : $userToken,
+                "token_id"    => $token_id ?? $userToken,
             ];
 
             $stmt = self::$db->prepare($query);

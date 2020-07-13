@@ -4,7 +4,7 @@ namespace Fvy\Group404;
 
 class Template
 {
-    private $_scriptPath = TEMPLATE_PATH;
+    private $scriptPath = TEMPLATE_PATH;
     public $properties;
     public $title;
 
@@ -21,7 +21,7 @@ class Template
     public function render($filename)
     {
         ob_start();
-        $tmpl = $this->_scriptPath . "/" . $filename . ".php";
+        $tmpl = $this->scriptPath . "/" . $filename . ".php";
         if (file_exists($tmpl)) {
             include_once($tmpl);
         } else {
