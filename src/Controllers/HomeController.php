@@ -59,8 +59,8 @@ class HomeController
         if ([$link_id, $shortCode] = DbMapper::isUrlExists($url)) {
             // Write statistic about found url
             DbUsersStats::insert($link_id, $userAgent, $userIp, $userReferrer, $token);
-            // Redirect to $url
-            echo "Found short code: {$shortCode}";
+            // If already found in DB Redirect to the $url
+            echo 'Your url found in DB, should we proceed?: <a href="/' . $shortCode . '">' . htmlspecialchars($url) . '</a>';
         } else {
             $insertedId = DbMapper::insertUrl($url);
             $shortCode = UrlHelper::createShortCode($insertedId);
@@ -98,7 +98,7 @@ class HomeController
                 if ($is404Error && !$antiFlood->isFlood(...$hashArgs)) {
                     $antiFlood->increaseCounter(...$hashArgs);
                     throw new \Exception("404 Error");
-                } elseif($is404Error && $antiFlood->isFlood(...$hashArgs)) {
+                } elseif ($is404Error && $antiFlood->isFlood(...$hashArgs)) {
                     header("Location: /anti-flood-page/");
                     exit;
                 } elseif ($urlValidator->isCorrectUrl($url)) {
@@ -116,6 +116,7 @@ class HomeController
 
     /**
      * Method for testing 404 error
+     * url: http://domain/404error
      */
     function actionShow404()
     {
@@ -125,7 +126,7 @@ class HomeController
     }
 
     /**
-     * Method for testing 404 error
+     * Method for displaying 404 error
      */
     function actionAntiFlood()
     {

@@ -16,7 +16,7 @@ class DbMapper
 
     static function isUrlExists($url)
     {
-        $query = "SELECT id, url_code"
+        $query = "SELECT id, url_code, url"
             . " FROM " . self::URLS_TABLE
             . " WHERE url = :url";
 

@@ -6,6 +6,10 @@ namespace Fvy\Group404\Components;
 
 use Memcached;
 
+/**
+ * Class AntiFlood
+ * @package Fvy\Group404\Components
+ */
 class AntiFlood
 {
     const ALLOWED_ATTEMPTS = 5;
