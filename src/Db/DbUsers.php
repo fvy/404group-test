@@ -8,19 +8,20 @@ class DbUsers
 {
     public static $db;
     CONST USER_TABLE = 'users';
-    CONST USER_TOKEN_TABLE = 'user_tokens';
+    CONST USER_TOKEN_TABLE = 'users_tokens';
 
     function __construct($db)
     {
         self::$db = $db;
     }
 
-    public static function getUserByToken($shortCode)
+    public static function getIdByToken($token)
     {
-        $query = "SELECT url
-            FROM " . self::URLS_TABLE . "
-            WHERE url_code = :short_code";
-        $params = ["short_code" => $shortCode];
+        $query = "SELECT user_id
+            FROM " . self::USER_TABLE . " 
+            INNER JOIN " . self::USER_TOKEN_TABLE . "
+            WHERE token_id = :token_id";
+        $params = ["token_id" => (int) $token];
 
         $stmt = self::$db->prepare($query);
         $stmt->execute($params);
@@ -33,7 +34,7 @@ class DbUsers
     {
         $query = "SELECT token_id
             FROM " . self::USER_TABLE . " 
-            inner join " . self::USER_TOKEN_TABLE . "
+            INNER JOIN " . self::USER_TOKEN_TABLE . "
             WHERE user_id = :id";
         $params = ["id" => (int) $id];
 

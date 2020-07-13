@@ -1,114 +1,22 @@
 <?php
 
-
 namespace Fvy\Group404\Db;
 
 
 class DbMapper
 {
     public static $db;
-    CONST URLS_TABLE = 'urls';
 
-    private $strDate;
-    private $strDateArr;
+    CONST URLS_TABLE = 'urls';
 
     function __construct($db)
     {
         self::$db = $db;
     }
 
-    public function setStrDate($date)
-    {
-        $this->strDate = $date;
-    }
-
-    public function getStrDate()
-    {
-        return $this->strDate;
-    }
-
-    /**
-     * @param null $startDate
-     * @param null $endDate
-     * @return mixed
-     */
-    public function usersList($startDate = null, $endDate = null)
-    {
-        // filter the dates
-        $startDate = $this->filterTheDate($startDate);
-        $endDate = $this->filterTheDate($endDate);
-
-        // go with period
-        $dateStr = (!empty($startDate) ? 'AND `Date` >= :startDate' : '') . ' ' .
-            (!empty($endDate) ? 'AND `Date` <= :endDate' : '');
-
-        $this->setStrDate($dateStr);
-
-        $sth = self::$db->prepare(
-            '
-            SELECT 
-                Id, `Name`, Email, userlvl(id) AS path, EmployerId, 
-                TIME_FORMAT(
-                    (select sum(`Time`) from timesheet WHERE id=EployeeId ' . $dateStr . '
-                    ), "%H:%i:%s"
-                ) utime, 
-                TIME_FORMAT(
-                    (SELECT sum(`Time`) 
-                    FROM users
-                    LEFT JOIN timesheet ON (Id=EployeeId)
-                    WHERE userlvl(id) LIKE CONCAT(CONVERT(path using utf8),"%") ' . $dateStr . '
-                    ), 
-                    "%H:%i:%s"
-                ) AS totalsum,
-                Info
-            FROM 
-                users u
-            WHERE 
-                u.Id in (select EployeeId from timesheet WHERE 1=1 ' . $dateStr . '
-                )                     
-            ORDER BY path
-            '
-        );
-
-
-        $array = [];
-        if (!empty($startDate)) {
-            $array += [':startDate' => $startDate];
-        }
-        if (!empty($endDate)) {
-            $array += [':endDate' => $endDate];
-        }
-        $this->strDateArr = $array;
-
-        $sth->execute($array);
-
-        //$sth->debugDumpParams();
-
-        return $sth->fetchAll();
-    }
-
-    /**
-     * @param $date
-     * @return mixed
-     */
-    public function filterTheDate($date)
-    {
-        if (empty($date)) {
-            return false;
-        }
-        $date_arr = explode("-", $date);
-
-        return (checkdate($date_arr[1], $date_arr[2], $date_arr[0])) ? $date : false;
-    }
-
-    public static function insert()
-    {
-
-    }
-
     static function isUrlExists($url)
     {
-        $query = " SELECT url_code"
+        $query = "SELECT id, url_code"
             . " FROM " . self::URLS_TABLE
             . " WHERE url = :url";
 
@@ -118,7 +26,7 @@ class DbMapper
         $stmt->execute($params);
         $result = $stmt->fetch();
 
-        return (empty($result)) ? false : $result["url_code"];
+        return (empty($result)) ? false : $result;
     }
 
     static function insertUrl($url)
@@ -160,18 +68,18 @@ class DbMapper
 
     public static function getUrlByCode($shortCode)
     {
-        $query = "SELECT url
-            FROM " . self::URLS_TABLE . "
-            WHERE url_code = :short_code";
         $params = array(
             "short_code" => $shortCode,
         );
 
-        $stmt = self::$db->prepare($query);
+        $stmt = self::$db->prepare("SELECT id, url
+            FROM " . self::URLS_TABLE . "
+            WHERE url_code = :short_code
+            ");
         $stmt->execute($params);
         $result = $stmt->fetch();
 
-        return empty($result) ? false : $result['url'];
+        return empty($result) ? false : $result;
     }
 
 }

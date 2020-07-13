@@ -21,9 +21,7 @@ class UrlValidator
             throw new \Exception("Incorrect URL format");
         }
 
-        if ($this->checkUrlExists && !$this->verifyUrlExists($url)) {
-            throw new \Exception("404 - Not found URL");
-        }
+        return true;
     }
 
     protected function checkUrlFormat($url)
@@ -35,21 +33,22 @@ class UrlValidator
         );
     }
 
-    protected function verifyUrlExists($url)
+    public function httpResponseCode($url)
     {
         try {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($ch, CURLOPT_NOBODY, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_exec($ch);
-            $response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $response = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
             curl_close($ch);
         } catch (\Exception $e) {
             throw new \Exception("Request error for URL");
         }
 
-        return !empty($response) && $response != 404;
+        return $response;
     }
 
     public function isCorrectShortUrl($code)

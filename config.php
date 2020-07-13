@@ -28,9 +28,9 @@ $dbConn = new DbConnection($dbConf);
 $conn = $dbConn->getDsn();
 
 $routes = [
-    'user/([0-9]+)' => 'home/index/$1',
-    'form'     => 'home/form',
-    '([0-9A-Za-z]+)'    => 'home/redirect/$1',
-    '404error'          => 'home/show404',
-    '' => 'home/index',
+    'user/([0-9]+)'  => 'home/index/$1',
+    'form'           => 'home/form',
+    '404error'       => 'home/show404',
+    '([0-9A-Za-z]+)' => 'home/redirect/$1',
+    ''               => 'home/index',
 ];
