@@ -13,9 +13,6 @@ use Fvy\Group404\Components\Utils\HtmlHelpers;
     </thead>
     <tbody>
     <?
-    print_r("<pre style='background-color: black; color: limegreen;'>");
-    print_r($this->properties['urlsData']);
-    print_r("</pre>");
     foreach ($this->properties['urlsData'] as $val) {
         ?>
 

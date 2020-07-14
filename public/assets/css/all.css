@@ -37,6 +37,6 @@
     min-width: 250px;
 }
 
-.urlform__disabled {
+form.urlform__disabled #sandbox-container {
     background-color: indianred;
 }
