@@ -29,13 +29,11 @@ use Fvy\Group404\Template;
             echo $this->render('HomeForm');
             ?>
         </div>
-        <div class="row">
+        <div class="row p-1 m-1">
             <div class="col-12">
                 <h3><?= $this->pageName; ?></h3>
                 <?php
-//                $view->data = $this->properties["data"];
-//                $view->dataOfTs = $this->properties["dataOfTs"];
-//                echo $view->render('HomeView');
+                echo $this->render('HomeView');
                 ?>
             </div>
         </div>

@@ -25,7 +25,7 @@ class HomeController
 
         $view = new Template();
         $view->title = 'Safe redirects/Links Shortener';
-        $view->pageName = 'Links';
+        $view->pageName = 'Urls of user will here';
         $view->token = $token;
 
         echo $view->render('Layout');
