@@ -20,7 +20,7 @@ class HomeController
      */
     public function actionIndex($param = 1)
     {
-        // by default take user with id = 1
+        // By default take user with id = 1
         $token = DbUsers::getTokenById($param);
 
         $view = new Template();
