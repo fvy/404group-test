@@ -15,19 +15,19 @@ class DbUsers
         self::$db = $db;
     }
 
-    public static function getIdByToken($token)
+    public static function getUserIdByToken($token)
     {
         $query = "SELECT user_id
             FROM " . self::USER_TABLE . " 
             INNER JOIN " . self::USER_TOKEN_TABLE . "
             WHERE token_id = :token_id";
-        $params = ["token_id" => (int) $token];
+        $params = ["token_id" => (string) $token];
 
         $stmt = self::$db->prepare($query);
         $stmt->execute($params);
         $result = $stmt->fetch();
 
-        return empty($result) ? false : $result['url'];
+        return empty($result) ? false : $result['user_id'];
     }
 
     public static function getTokenById($id)

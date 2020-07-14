@@ -5,14 +5,14 @@
 //error_reporting(E_ALL);
 
 use Fvy\Group404\Components\Router;
-use Fvy\Group404\Db\DbMapper;
+use Fvy\Group404\Db\DbUrls;
 use Fvy\Group404\Db\DbUsers;
 use Fvy\Group404\Db\DbUsersStats;
 
 require_once '../src/Psr4Autoloader.php';
 require_once '../config.php';
 
-$dbMapper = new DbMapper($conn);
+$dbMapper = new DbUrls($conn);
 $dbUsers = new DbUsers($conn);
 $dbUsersStats = new DbUsersStats($conn);
 

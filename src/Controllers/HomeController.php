@@ -5,7 +5,7 @@ namespace Fvy\Group404\Controllers;
 use Fvy\Group404\Components\AntiFlood;
 use Fvy\Group404\Components\UrlHelper;
 use Fvy\Group404\Components\UrlValidator;
-use Fvy\Group404\Db\DbMapper;
+use Fvy\Group404\Db\DbUrls;
 use Fvy\Group404\Db\DbUsers;
 use Fvy\Group404\Db\DbUsersStats;
 use Fvy\Group404\Template;
@@ -18,15 +18,16 @@ class HomeController
      * @return bool
      * @throws \Exception
      */
-    public function actionIndex($param = 1)
+    public function actionIndex($param)
     {
         // By default take user with id = 1
         $token = DbUsers::getTokenById($param);
-
         $view = new Template();
         $view->title = 'Safe redirects/Links Shortener';
         $view->pageName = 'Urls of user will here';
         $view->token = $token;
+        $view->isUserActive = (bool)!empty($token);
+        $view->urlsData = DbUrls::getUrlsByUserId($param);
 
         echo $view->render('Layout');
 
@@ -56,16 +57,17 @@ class HomeController
             throw new \Exception("Empty token");
         }
 
-        if ([$link_id, $shortCode] = DbMapper::isUrlExists($url)) {
+        if ([$link_id, $shortCode] = DbUrls::isUrlExists($url)) {
             // Write statistic about found url
             DbUsersStats::insert($link_id, $userAgent, $userIp, $userReferrer, $token);
             // If already found in DB Redirect to the $url
             echo 'Your url found in DB, should we proceed?: <a href="/' . $shortCode . '">' . htmlspecialchars($url) . '</a>';
         } else {
-            $insertedId = DbMapper::insertUrl($url);
+            $userId = DbUsers::getUserIdByToken($token);
+            $insertedId = DbUrls::insertUrl($url, $userId);
             $shortCode = UrlHelper::createShortCode($insertedId);
             echo 'generated URL: ' . $shortCode;
-            DbMapper::updateShortCode($insertedId, $shortCode);
+            DbUrls::updateShortCode($insertedId, $shortCode);
         }
 
         return true;
@@ -82,7 +84,7 @@ class HomeController
             $antiFlood = new AntiFlood(60);
 
             if ($urlValidator->isCorrectShortUrl($shortCode)) {
-                [$link_id, $url] = DbMapper::getUrlByCode($shortCode);
+                [$link_id, $url] = DbUrls::getUrlByCode($shortCode);
 
                 if (empty($url)) {
                     throw new \Exception("Can't find short code");

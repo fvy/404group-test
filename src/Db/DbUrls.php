@@ -3,7 +3,7 @@
 namespace Fvy\Group404\Db;
 
 
-class DbMapper
+class DbUrls
 {
     public static $db;
 
@@ -29,7 +29,7 @@ class DbMapper
         return (empty($result)) ? false : $result;
     }
 
-    static function insertUrl($url)
+    static function insertUrl($url, $userId)
     {
         $query = "INSERT INTO " . self::URLS_TABLE
             . " (url, users_id) "
@@ -37,7 +37,7 @@ class DbMapper
 
         $params = [
             "url" => $url,
-            "users_id" => 1
+            "users_id" => $userId
         ];
 
         $stmt = self::$db->prepare($query);
@@ -82,4 +82,20 @@ class DbMapper
         return empty($result) ? false : $result;
     }
 
+    static function getUrlsByUserId($userId)
+    {
+        $params = array(
+            "users_id" => $userId,
+        );
+        $stmt = self::$db->prepare(
+            "SELECT id, url, url_code
+            FROM " . self::URLS_TABLE . "
+            WHERE users_id = :users_id
+            "
+        );
+        $stmt->execute($params);
+        $result = $stmt->fetchAll();
+
+        return $result;
+    }
 }

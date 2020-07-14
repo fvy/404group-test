@@ -31,7 +31,7 @@ use Fvy\Group404\Template;
         </div>
         <div class="row p-1 m-1">
             <div class="col-12">
-                <h3><?= $this->pageName; ?></h3>
+                <h3><?= $this->properties['pageName']; ?></h3>
                 <?php
                 echo $this->render('HomeView');
                 ?>

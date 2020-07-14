@@ -36,3 +36,7 @@
 .popover-content .table__row {
     min-width: 250px;
 }
+
+.urlform__disabled {
+    background-color: indianred;
+}
