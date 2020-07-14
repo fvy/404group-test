@@ -27,11 +27,29 @@ $dbConf = new DbConfiguration(
 $dbConn = new DbConnection($dbConf);
 $conn = $dbConn->getDsn();
 
+// Routes to Controller
 $routes = [
+    // Testing form for user1-user3
+    // http://domain-name/user/1/ - active
+    // http://domain-name/user/2/ - NOT active token
+    // http://domain-name/user/3/ - active
+    //
     'user/([0-9]+)'  => 'home/index/$1',
     'form'           => 'home/form',
+    //
+    // Test page for  http://domain-name/6
+    //
     '404error'       => 'home/show404',
+    //
+    // Anti-flood Page
+    //
     'anti-flood-page' => 'home/antiflood',
+    //
+    // Redirects urls: http://domain-name/2Ti
+    //
     '([0-9A-Za-z]+)' => 'home/redirect/$1',
+    //
+    // Home page: http://domain-name/
+    //
     ''               => 'home/index',
 ];
