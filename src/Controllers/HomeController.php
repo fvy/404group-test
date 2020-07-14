@@ -18,7 +18,7 @@ class HomeController
      * @return bool
      * @throws \Exception
      */
-    public function actionIndex($param)
+    public function actionIndex($param = 1)
     {
         // By default take user with id = 1
         $token = DbUsers::getTokenById($param);
